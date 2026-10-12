@@ -1,0 +1,12 @@
+
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+retrieval_debug.txt
+check_gemini.py
+test_chunker.py
+test/
+.test/
