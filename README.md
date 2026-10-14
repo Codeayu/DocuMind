@@ -1,208 +1,304 @@
-📚 DocuMind — AI-Powered PDF Assistant
-
-Chat with your documents. Get answers grounded in your content.
-
-DocuMind is an AI-powered document assistant built using Retrieval-Augmented Generation (RAG). Upload a PDF, ask questions in natural language, and receive context-aware answers based on relevant passages retrieved from your document.
-
-Instead of relying solely on an LLM's general knowledge, DocuMind retrieves relevant document chunks and provides them as context to the language model to generate grounded responses.
+# ✦ DocuMind
+### Your documents. Understood by AI.
 
 <p align="center">
   <a href="https://documind-by-ayush.streamlit.app/">
-    <strong>🚀 Try the Live Demo</strong>
+    <img src="https://img.shields.io/badge/🚀_Live_Demo-Try_DocuMind-6366f1?style=for-the-badge" alt="Live Demo"/>
   </a>
-  &nbsp; • &nbsp;
   <a href="https://github.com/Codeayu/DocuMind">
-    <strong>💻 View Source Code</strong>
+    <img src="https://img.shields.io/badge/GitHub-Source_Code-181717?style=for-the-badge&logo=github" alt="GitHub Repository"/>
   </a>
-</p>---
+</p>
 
-✨ Features
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white" alt="Streamlit"/>
+  <img src="https://img.shields.io/badge/FAISS-Vector_Search-0F766E?style=flat-square" alt="FAISS"/>
+  <img src="https://img.shields.io/badge/RAG-Generative_AI-7C3AED?style=flat-square" alt="RAG"/>
+  <img src="https://img.shields.io/badge/Google_Gemini-API-4285F4?style=flat-square&logo=googlegemini&logoColor=white" alt="Google Gemini"/>
+</p>
 
-- 📄 PDF Upload: Upload a text-based PDF and build a searchable knowledge base.
-- ✂️ Intelligent Chunking: Split extracted document text into manageable, overlapping chunks.
-- 🧠 Semantic Embeddings: Generate vector embeddings using Sentence Transformers.
-- 🔎 Semantic Search: Use FAISS to retrieve relevant document passages for a question.
-- 🤖 AI-Powered Answers: Generate context-aware answers using the Google Gemini API.
-- 🔄 Automatic Model Fallback: Attempt alternative configured Gemini models when a model encounters quota or service errors.
-- 📚 Source References: Inspect retrieved chunks and similarity scores to understand which document passages informed an answer.
-- 💬 Interactive Chat: Ask multiple questions about an uploaded document in a conversational interface.
-- 🎨 Modern UI: A dark-themed Streamlit interface with a dedicated developer profile page.
+---
 
-🏗️ How It Works
+## 💡 What is DocuMind?
 
-DocuMind follows a Retrieval-Augmented Generation pipeline:
+**DocuMind** is an AI-powered PDF assistant built with **Retrieval-Augmented Generation (RAG)**. It allows users to upload a PDF, ask questions in natural language, and receive answers grounded in the document's content.
 
+Instead of relying exclusively on an AI model's general knowledge, DocuMind retrieves relevant passages from the uploaded document and provides them as context for answer generation.
+
+> Upload a document. Ask a question. Get a contextual answer with source references.
+
+<p align="center">
+  <a href="https://documind-by-ayush.streamlit.app/"><strong>→ Explore the live application</strong></a>
+</p>
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 📄 **PDF Processing** | Extract text from uploaded, text-based PDFs. |
+| 🧩 **Overlapping Chunking** | Divide document text into manageable chunks while preserving context across boundaries. |
+| 🧠 **Semantic Embeddings** | Represent text using Sentence Transformers. |
+| 🔎 **Vector Search** | Retrieve relevant passages using FAISS similarity search. |
+| 🤖 **Context-Grounded Answers** | Generate answers using retrieved document context and Google Gemini. |
+| 🔄 **Model Fallback** | Attempt alternative configured Gemini models when a model encounters eligible quota or service errors. |
+| 📚 **Source Inspection** | View retrieved chunks and similarity scores alongside answers. |
+| 💬 **Interactive Chat** | Ask follow-up questions about the uploaded PDF during the session. |
+| 🎨 **Modern Interface** | Dark-themed Streamlit UI with an integrated developer page. |
+
+---
+
+## 🏗️ Architecture
+
+DocuMind uses a retrieval-augmented generation pipeline to connect a user's question with relevant document content.
+
+```mermaid
 flowchart TD
-    A[Upload PDF] --> B[Extract Text with PyPDF]
-    B --> C[Split Text into Overlapping Chunks]
-    C --> D[Generate Embeddings]
-    D --> E[Build FAISS Vector Index]
-    F[User Question] --> G[Embed Question]
-    G --> H[Retrieve Relevant Chunks]
-    E --> H
-    H --> I[Question + Retrieved Context]
-    I --> J[Gemini Model with Fallback]
-    J --> K[Grounded Answer]
-    K --> L[Display Answer and Sources]
+    A["📄 Upload PDF"] --> B["Extract Text · PyPDF"]
+    B --> C["Split into Overlapping Chunks"]
+    C --> D["Generate Embeddings"]
+    D --> E[("FAISS Vector Index")]
 
-Pipeline Explained
+    Q["💬 User Question"] --> QE["Embed Question"]
+    QE --> R["Retrieve Top 8 Chunks"]
+    E --> R
 
-1. Document extraction: PyPDF extracts selectable text from the uploaded PDF.
-2. Chunking: The extracted text is divided into chunks of approximately 1,000 characters with 150 characters of overlap.
-3. Embedding generation: Sentence Transformers converts chunks into numerical vector representations.
-4. Vector indexing: FAISS creates an index for efficient similarity search.
-5. Retrieval: The application retrieves up to eight relevant chunks for the user's question.
-6. Answer generation: The question and retrieved context are passed to a configured Gemini model.
-7. Model fallback: If a model encounters a qualifying quota or service error, DocuMind attempts another configured model.
-8. Source inspection: The retrieved chunks and their similarity scores are displayed alongside the answer.
+    R --> CTX["Question + Retrieved Context"]
+    CTX --> LLM["Gemini Model Fallback"]
+    LLM --> ANS["Grounded Answer"]
+    ANS --> SRC["Answer + Source Chunks"]
 
-🛠️ Tech Stack
+    style A fill:#312e81,stroke:#818cf8,color:#ffffff
+    style E fill:#134e4a,stroke:#2dd4bf,color:#ffffff
+    style LLM fill:#4c1d95,stroke:#a78bfa,color:#ffffff
+    style ANS fill:#164e63,stroke:#67e8f9,color:#ffffff
+```
 
-Component| Technology
-Language| Python
-User Interface| Streamlit
-PDF Processing| PyPDF
-Embeddings| Sentence Transformers
-Embedding Model| "all-MiniLM-L6-v2"
-Vector Search| FAISS
-Generative AI| Google Gemini API
-Configuration| Python dotenv and Streamlit Secrets
-Deployment| Streamlit Community Cloud
-Version Control| Git and GitHub
+### ⚙️ How the pipeline works
 
-📂 Project Structure
+1. **Extract:** PyPDF extracts selectable text from the uploaded document.
+2. **Chunk:** Text is split into chunks of approximately **1,000 characters**, with **150 characters of overlap**.
+3. **Embed:** Sentence Transformers converts chunks into vector embeddings.
+4. **Index:** FAISS stores the vectors in an in-memory similarity-search index.
+5. **Retrieve:** The application retrieves up to **8 relevant chunks** for a question.
+6. **Generate:** The question and retrieved passages are sent to a configured Gemini model.
+7. **Fallback:** If an eligible API error occurs, the generator attempts another configured model.
+8. **Inspect:** The application displays the answer and retrieved source chunks.
 
+---
+
+## 🧰 Tech Stack
+
+<table>
+  <tr>
+    <td width="180"><strong>Language</strong></td>
+    <td>Python</td>
+  </tr>
+  <tr>
+    <td><strong>UI</strong></td>
+    <td>Streamlit</td>
+  </tr>
+  <tr>
+    <td><strong>PDF Extraction</strong></td>
+    <td>PyPDF</td>
+  </tr>
+  <tr>
+    <td><strong>Embeddings</strong></td>
+    <td>Sentence Transformers · <code>all-MiniLM-L6-v2</code></td>
+  </tr>
+  <tr>
+    <td><strong>Vector Search</strong></td>
+    <td>FAISS · Inner-product similarity search</td>
+  </tr>
+  <tr>
+    <td><strong>LLM</strong></td>
+    <td>Google Gemini API</td>
+  </tr>
+  <tr>
+    <td><strong>Configuration</strong></td>
+    <td>python-dotenv · Streamlit Secrets</td>
+  </tr>
+  <tr>
+    <td><strong>Deployment</strong></td>
+    <td>Streamlit Community Cloud</td>
+  </tr>
+</table>
+
+---
+
+## 📂 Project Structure
+
+```text
 DocuMind/
 ├── .streamlit/
 │   └── config.toml
-├── app.py
-├── main.py
-├── chunker.py
-├── retriever.py
-├── generator.py
-├── requirements.txt
-├── .gitignore
-├── README.md
-└── .env                  # Local only; never commit
+├── app.py                 # Streamlit application
+├── main.py                # PDF text extraction utilities
+├── chunker.py             # Text chunking
+├── retriever.py           # Embeddings and FAISS retrieval
+├── generator.py            # Gemini generation and model fallback
+├── requirements.txt       # Python dependencies
+├── .gitignore             # Excluded files and secrets
+└── README.md              # Project documentation
+```
 
-The ".streamlit/config.toml" file contains Streamlit configuration. The ".env" file is used for local development and should remain outside version control.
+---
 
-🚀 Run Locally
+## 🚀 Run Locally
 
-Prerequisites
+### Prerequisites
 
-- Python 3.10 or a compatible Python version supported by your dependencies
+- Python 3.10+ (use a version supported by your installed dependencies)
 - A Google Gemini API key
 - Git
 
-1. Clone the repository
+### 1. Clone the repository
 
+```bash
 git clone https://github.com/Codeayu/DocuMind.git
 cd DocuMind
+```
 
-2. Create a virtual environment
+### 2. Create a virtual environment
 
-Windows:
+**Windows**
 
+```powershell
 python -m venv .venv
 .venv\Scripts\activate
+```
 
-macOS / Linux:
+**macOS / Linux**
 
+```bash
 python -m venv .venv
 source .venv/bin/activate
+```
 
-3. Install dependencies
+### 3. Install dependencies
 
+```bash
 pip install -r requirements.txt
+```
 
-4. Configure your API key
+### 4. Configure environment variables
 
-Create a ".env" file in the project root:
+Create a `.env` file in the project root:
 
+```env
 GEMINI_API_KEY=your_gemini_api_key
+```
 
-Get your API key through "Google AI Studio" (https://aistudio.google.com/).
+Get an API key through [Google AI Studio](https://aistudio.google.com/).
 
-Security note: Never commit your ".env" file or expose your API key in source code, screenshots, or public repositories.
+**🔐 Security:** Never commit `.env`, API keys, or secret configuration files to GitHub.
 
-5. Launch the application
+### 5. Start DocuMind
 
+```bash
 streamlit run app.py
+```
 
-Streamlit will provide a local URL, usually "http://localhost:8501".
+Open the local URL displayed in your terminal, usually `http://localhost:8501`.
 
-☁️ Deployment
+---
 
-DocuMind is deployed using Streamlit Community Cloud.
+## ☁️ Live Deployment
 
-Live application: https://documind-by-ayush.streamlit.app/
+**Try DocuMind:** [documind-by-ayush.streamlit.app](https://documind-by-ayush.streamlit.app/)
+
+The application is hosted on Streamlit Community Cloud.
 
 To deploy your own instance:
 
-1. Fork or clone the repository.
-2. Sign in to "Streamlit Community Cloud" (https://share.streamlit.io/).
-3. Create an app connected to your GitHub repository.
-4. Set the main file path to "app.py".
-5. Add your Gemini API key under the app's Settings → Secrets:
+1. Fork this repository.
+2. Connect your GitHub account to [Streamlit Community Cloud](https://share.streamlit.io/).
+3. Create an app using `app.py` as the main file.
+4. Add the following secret under the app's **Settings → Secrets**:
 
+```toml
 GEMINI_API_KEY = "your_gemini_api_key"
+```
 
-6. Deploy the application.
+5. Deploy the application.
 
-🔄 Model Fallback and Reliability
+---
 
-DocuMind supports a configurable sequence of Gemini models.
+## 🔄 Model Fallback & Reliability
 
-When a configured model encounters a qualifying API error, such as quota exhaustion or a temporary service issue, the application can attempt the next model in the sequence.
+The generator supports a configurable sequence of Gemini models.
 
-This improves resilience, but it does not guarantee uninterrupted generation. Alternative models must be available to the API project and have usable quota. If all configured models fail, the application displays a fallback message.
+When a model encounters an eligible error, such as quota exhaustion or a temporary service failure, DocuMind can attempt another configured model.
 
-⚠️ Current Limitations
+Fallback is best-effort: the alternative model must be available to the API project and have remaining quota. If all configured models fail, the application returns a user-friendly error message.
 
-- Supports text-based PDFs; scanned documents may require OCR.
-- Answer quality depends on PDF text extraction, chunking, retrieval relevance, and model behavior.
-- Answers are grounded in retrieved context, but may still contain errors. Verify important information against the original document.
-- Gemini API quotas, model availability, and response times can affect generation.
-- Large PDFs may require additional processing time and memory.
-- The current implementation is designed for one uploaded PDF per active session.
+---
 
-🔮 Potential Improvements
+## ⚠️ Limitations
 
-- OCR support for scanned PDFs.
-- Support for multiple documents and persistent knowledge bases.
-- Hybrid retrieval combining keyword and semantic search.
-- Reranking retrieved chunks for improved relevance.
-- Retrieval evaluation with precision, recall, and ranking metrics.
-- Streaming responses and improved generation-time feedback.
-- More robust model availability checks and fallback monitoring.
-- Automated tests and deployment checks.
+- Currently designed for **one text-based PDF per active session**.
+- Scanned PDFs may require OCR before their text can be extracted.
+- Retrieval quality depends on text extraction, chunk boundaries, and the relevance of retrieved passages.
+- Generated answers may contain errors; verify important details against the original document.
+- Gemini quotas, model availability, and response times may affect answer generation.
+- The current FAISS index is held in memory rather than persisted as a permanent vector database.
 
-👨‍💻 About the Developer
+---
 
-Ayush Chainani
-AI & Data Science Engineer | Python Developer
+## 🛣️ Future Improvements
 
-I enjoy building practical software that combines backend engineering, data, and artificial intelligence. DocuMind is a hands-on project exploring how retrieval, vector search, and language models can work together to create useful document-based AI applications.
+- [ ] OCR for scanned documents
+- [ ] Multiple-document knowledge bases
+- [ ] Persistent vector storage
+- [ ] Hybrid keyword and semantic retrieval
+- [ ] Reranking for improved retrieval relevance
+- [ ] Retrieval evaluation and automated tests
+- [ ] Streaming responses
+- [ ] Improved model availability and fallback monitoring
 
-- 🌐 Portfolio: https://ayushchainani.dev
-- 💻 GitHub: https://github.com/Codeayu
-- 🚀 Live Project: https://documind-by-ayush.streamlit.app/
+---
 
-🤝 Feedback and Contributions
+## 👨‍💻 About the Developer
 
-Feedback, suggestions, and contributions are welcome!
+**Ayush Chainani**  
+*AI & Data Science Engineer · Python Developer*
 
-If you encounter an issue or have an idea for improving DocuMind, open a GitHub issue or submit a pull request.
+I enjoy building practical applications that combine backend engineering, data, and AI. DocuMind is a hands-on project exploring how document processing, vector search, retrieval, and large language models work together in a real application.
 
-📄 License
+<p align="left">
+  <a href="https://ayushchainani.dev">
+    <img src="https://img.shields.io/badge/Portfolio-ayushchainani.dev-6366f1?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Portfolio"/>
+  </a>
+  <a href="https://github.com/Codeayu">
+    <img src="https://img.shields.io/badge/GitHub-Codeayu-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
+  </a>
+  <a href="https://documind-by-ayush.streamlit.app/">
+    <img src="https://img.shields.io/badge/Live_Project-DocuMind-0f766e?style=for-the-badge&logo=streamlit&logoColor=white" alt="Live Project"/>
+  </a>
+</p>
 
-No license has been specified yet. Add a "LICENSE" file if you intend to grant others permission to reuse, modify, or distribute the code.
+---
+
+## 🤝 Feedback & Contributions
+
+Suggestions, bug reports, and contributions are welcome.
+
+- Open an issue to report a bug or propose an improvement.
+- Submit a pull request with your proposed changes.
+- Share feedback about retrieval quality and answer grounding.
+
+## 📄 License
+
+No license is currently specified. Until a license is added, reuse and redistribution permissions are not explicitly granted.
 
 ---
 
 <p align="center">
-  <strong>Built with Python, FAISS, Sentence Transformers, and Gemini.</strong>
-  <br>
-  <em>From documents to useful answers.</em>
+  <strong>Built with curiosity. Powered by retrieval. Designed for useful answers.</strong>
+  <br><br>
+  <a href="https://documind-by-ayush.streamlit.app/">🚀 Try DocuMind</a>
+  &nbsp; · &nbsp;
+  <a href="https://github.com/Codeayu/DocuMind">⭐ Explore the Repository</a>
 </p>
